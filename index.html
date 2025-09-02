@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Game Platform 🎮</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🎮 Multi-Game Platform 🎮</h1>
+            <div class="game-selector">
+                <button class="game-btn active" data-game="menu">🏠 Home</button>
+                <button class="game-btn" data-game="tictactoe">⭕ Tic-Tac-Toe</button>
+                <button class="game-btn" data-game="memory">🧠 Memory Game</button>
+                <button class="game-btn" data-game="snake">🐍 Snake Game</button>
+                <button class="game-btn" data-game="airhockey">🏒 Air Hockey</button>
+                <button class="game-btn" data-game="pong">🏓 Pong Game</button>
+                <button class="game-btn" data-game="breakout">🧱 Breakout</button>
+            </div>
+        </header>
+
+        <!-- Main Menu -->
+        <div id="menu" class="game-screen active">
+            <div class="menu-content">
+                <h2>🎯 Choose Your Game!</h2>
+                <div class="game-cards">
+                    <div class="game-card" data-game="tictactoe">
+                        <div class="card-emoji">⭕</div>
+                        <h3>Tic-Tac-Toe</h3>
+                        <p>Classic 3x3 grid game</p>
+                        <div class="modes">
+                            <span>👤 vs 🤖</span>
+                            <span>👤 vs 👤</span>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="memory">
+                        <div class="card-emoji">🧠</div>
+                        <h3>Memory Game</h3>
+                        <p>Match the pairs!</p>
+                        <div class="modes">
+                            <span>👤 vs 🤖</span>
+                            <span>👤 vs 👤</span>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="snake">
+                        <div class="card-emoji">🐍</div>
+                        <h3>Snake Game</h3>
+                        <p>Eat and grow!</p>
+                        <div class="modes">
+                            <span>👤 Solo Play</span>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="airhockey">
+                        <div class="card-emoji">🏒</div>
+                        <h3>Air Hockey</h3>
+                        <p>Fast-paced hockey!</p>
+                        <div class="modes">
+                            <span>👤 vs 🤖</span>
+                            <span>👤 vs 👤</span>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="pong">
+                        <div class="card-emoji">🏓</div>
+                        <h3>Pong Game</h3>
+                        <p>Classic paddle game!</p>
+                        <div class="modes">
+                            <span>👤 vs 🤖</span>
+                            <span>👤 vs 👤</span>
+                        </div>
+                    </div>
+                    <div class="game-card" data-game="breakout">
+                        <div class="card-emoji">🧱</div>
+                        <h3>Breakout</h3>
+                        <p>Break all bricks!</p>
+                        <div class="modes">
+                            <span>👤 Solo Play</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tic-Tac-Toe Game -->
+        <div id="tictactoe" class="game-screen">
+            <div class="game-header">
+                <h2>⭕ Tic-Tac-Toe</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="computer">👤 vs 🤖</button>
+                    <button class="mode-btn" data-mode="player">👤 vs 👤</button>
+                </div>
+            </div>
+            
+            <div class="player-setup" id="ttt-setup">
+                <div class="input-group">
+                    <label>Player 1 Name:</label>
+                    <input type="text" id="ttt-player1" placeholder="Enter Player 1 name" value="Player 1">
+                </div>
+                <div class="input-group" id="ttt-player2-group" style="display: none;">
+                    <label>Player 2 Name:</label>
+                    <input type="text" id="ttt-player2" placeholder="Enter Player 2 name" value="Player 2">
+                </div>
+                <button class="start-btn" id="ttt-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="ttt-game" style="display: none;">
+                <div class="game-info">
+                    <div class="current-player">
+                        <span id="ttt-current">Player 1's Turn</span>
+                        <span class="player-symbol" id="ttt-symbol">⭕</span>
+                    </div>
+                    <div class="score">
+                        <span id="ttt-score1">Player 1: 0</span>
+                        <span id="ttt-score2">Computer: 0</span>
+                    </div>
+                </div>
+                <div class="ttt-board" id="ttt-board"></div>
+                <div class="game-controls">
+                    <button class="control-btn" id="ttt-reset">🔄 New Game</button>
+                    <button class="control-btn" id="ttt-back">🏠 Back to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Game -->
+        <div id="memory" class="game-screen">
+            <div class="game-header">
+                <h2>🧠 Memory Game</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="computer">👤 vs 🤖</button>
+                    <button class="mode-btn" data-mode="player">👤 vs 👤</button>
+                </div>
+            </div>
+            
+            <div class="player-setup" id="memory-setup">
+                <div class="input-group">
+                    <label>Player 1 Name:</label>
+                    <input type="text" id="memory-player1" placeholder="Enter Player 1 name" value="Player 1">
+                </div>
+                <div class="input-group" id="memory-player2-group" style="display: none;">
+                    <label>Player 2 Name:</label>
+                    <input type="text" id="memory-player2" placeholder="Enter Player 2 name" value="Player 2">
+                </div>
+                <button class="start-btn" id="memory-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="memory-game" style="display: none;">
+                <div class="game-info">
+                    <div class="current-player">
+                        <span id="memory-current">Player 1's Turn</span>
+                    </div>
+                    <div class="score">
+                        <span id="memory-score1">Player 1: 0</span>
+                        <span id="memory-score2">Computer: 0</span>
+                    </div>
+                </div>
+                <div class="memory-board" id="memory-board"></div>
+                <div class="game-controls">
+                    <button class="control-btn" id="memory-reset">🔄 New Game</button>
+                    <button class="control-btn" id="memory-back">🏠 Back to Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snake Game -->
+        <div id="snake" class="game-screen">
+            <div class="game-header">
+                <h2>🐍 Snake Game</h2>
+            </div>
+            
+            <div class="player-setup" id="snake-setup">
+                <div class="input-group">
+                    <label>Player Name:</label>
+                    <input type="text" id="snake-player" placeholder="Enter your name" value="Player">
+                </div>
+                <button class="start-btn" id="snake-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="snake-game" style="display: none;">
+                <div class="game-info">
+                    <div class="snake-stats">
+                        <span id="snake-player-name">Player</span>
+                        <span id="snake-score">Score: 0</span>
+                        <span id="snake-high-score">High Score: 0</span>
+                    </div>
+                </div>
+                <div class="snake-container">
+                    <canvas id="snake-canvas" width="400" height="400"></canvas>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" id="snake-pause">⏸️ Pause</button>
+                    <button class="control-btn" id="snake-reset">🔄 New Game</button>
+                    <button class="control-btn" id="snake-back">🏠 Back to Menu</button>
+                </div>
+                <div class="instructions">
+                    <p>🎮 Use arrow keys to control the snake</p>
+                    <p>🍎 Eat food to grow and increase score</p>
+                    <p>⚠️ Don't hit walls or yourself!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Air Hockey Game -->
+        <div id="airhockey" class="game-screen">
+            <div class="game-header">
+                <h2>🏒 Air Hockey</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="computer">👤 vs 🤖</button>
+                    <button class="mode-btn" data-mode="player">👤 vs 👤</button>
+                </div>
+            </div>
+            
+            <div class="player-setup" id="airhockey-setup">
+                <div class="input-group">
+                    <label>Player 1 Name:</label>
+                    <input type="text" id="airhockey-player1" placeholder="Enter Player 1 name" value="Player 1">
+                </div>
+                <div class="input-group" id="airhockey-player2-group" style="display: none;">
+                    <label>Player 2 Name:</label>
+                    <input type="text" id="airhockey-player2" placeholder="Enter Player 2 name" value="Player 2">
+                </div>
+                <button class="start-btn" id="airhockey-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="airhockey-game" style="display: none;">
+                <div class="game-info">
+                    <div class="score">
+                        <span id="airhockey-score1">Player 1: 0</span>
+                        <span id="airhockey-score2">Computer: 0</span>
+                    </div>
+                </div>
+                <div class="hockey-container">
+                    <canvas id="airhockey-canvas" width="600" height="400"></canvas>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" id="airhockey-reset">🔄 New Game</button>
+                    <button class="control-btn" id="airhockey-back">🏠 Back to Menu</button>
+                </div>
+                <div class="instructions">
+                    <p>🎮 Move mouse to control your paddle</p>
+                    <p>🏒 Hit the puck into opponent's goal</p>
+                    <p>🏆 First to 5 goals wins!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pong Game -->
+        <div id="pong" class="game-screen">
+            <div class="game-header">
+                <h2>🏓 Pong Game</h2>
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="computer">👤 vs 🤖</button>
+                    <button class="mode-btn" data-mode="player">👤 vs 👤</button>
+                </div>
+            </div>
+            
+            <div class="player-setup" id="pong-setup">
+                <div class="input-group">
+                    <label>Player 1 Name:</label>
+                    <input type="text" id="pong-player1" placeholder="Enter Player 1 name" value="Player 1">
+                </div>
+                <div class="input-group" id="pong-player2-group" style="display: none;">
+                    <label>Player 2 Name:</label>
+                    <input type="text" id="pong-player2" placeholder="Enter Player 2 name" value="Player 2">
+                </div>
+                <button class="start-btn" id="pong-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="pong-game" style="display: none;">
+                <div class="game-info">
+                    <div class="score">
+                        <span id="pong-score1">Player 1: 0</span>
+                        <span id="pong-score2">Computer: 0</span>
+                    </div>
+                </div>
+                <div class="pong-container">
+                    <canvas id="pong-canvas" width="600" height="400"></canvas>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" id="pong-reset">🔄 New Game</button>
+                    <button class="control-btn" id="pong-back">🏠 Back to Menu</button>
+                </div>
+                <div class="instructions">
+                    <p>🎮 Use W/S keys or mouse to move paddle</p>
+                    <p>🏓 Don't let the ball pass your paddle</p>
+                    <p>🏆 First to 10 points wins!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breakout Game -->
+        <div id="breakout" class="game-screen">
+            <div class="game-header">
+                <h2>🧱 Breakout</h2>
+            </div>
+            
+            <div class="player-setup" id="breakout-setup">
+                <div class="input-group">
+                    <label>Player Name:</label>
+                    <input type="text" id="breakout-player" placeholder="Enter your name" value="Player">
+                </div>
+                <button class="start-btn" id="breakout-start">🚀 Start Game</button>
+            </div>
+
+            <div class="game-area" id="breakout-game" style="display: none;">
+                <div class="game-info">
+                    <div class="breakout-stats">
+                        <span id="breakout-player-name">Player</span>
+                        <span id="breakout-score">Score: 0</span>
+                        <span id="breakout-lives">Lives: 3</span>
+                        <span id="breakout-level">Level: 1</span>
+                    </div>
+                </div>
+                <div class="breakout-container">
+                    <canvas id="breakout-canvas" width="600" height="500"></canvas>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" id="breakout-pause">⏸️ Pause</button>
+                    <button class="control-btn" id="breakout-reset">🔄 New Game</button>
+                    <button class="control-btn" id="breakout-back">🏠 Back to Menu</button>
+                </div>
+                <div class="instructions">
+                    <p>🎮 Move mouse or A/D keys to control paddle</p>
+                    <p>🧱 Break all bricks to advance levels</p>
+                    <p>⚠️ Don't let the ball fall!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winner Modal -->
+        <div id="winner-modal" class="modal">
+            <div class="modal-content">
+                <div class="winner-animation">
+                    <div class="confetti"></div>
+                    <div class="winner-emoji" id="winner-emoji">🏆</div>
+                    <h2 id="winner-text">🎉 Winner! 🎉</h2>
+                    <div class="winner-details" id="winner-details"></div>
+                    <div class="modal-buttons">
+                        <button class="modal-btn" id="play-again">🔄 Play Again</button>
+                        <button class="modal-btn" id="back-to-menu">🏠 Back to Menu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
