@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: game-platform
-        image: multi-game-platform:latest
-        imagePullPolicy: Never
+        image: himanshutoshniwal7570/multi-game-platform:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources:

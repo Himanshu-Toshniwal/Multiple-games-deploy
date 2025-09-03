@@ -57,37 +57,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  deploy-to-kubernetes:
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Configure Kubernetes
-      uses: azure/k8s-set-context@v3
-      with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
-
-    - name: Deploy to Kubernetes
-      run: |
-        # Update the deployment with the new image
-        kubectl set image deployment/multi-game-platform \
-          game-platform=${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:${{ github.sha }} \
-          -n ${{ env.KUBE_NAMESPACE }}
-        
-        # Apply the deployment if it doesn't exist
-        kubectl apply -f kubernetes/deployment.yaml -n ${{ env.KUBE_NAMESPACE }}
-        
-        # Wait for rollout to complete
-        kubectl rollout status deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }}
-        
-        # Restart the deployment to ensure new config is applied
-        kubectl rollout restart deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }}
-
-    - name: Verify deployment
-      run: |
-        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
-        kubectl get svc -n ${{ env.KUBE_NAMESPACE }}
+  # Kubernetes deployment can be done manually using:
+  # kubectl apply -f Kubernetes/deployment.yaml
+  # kubectl port-forward service/multi-game-platform-service 3000:80
