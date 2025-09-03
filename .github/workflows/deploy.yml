@@ -57,6 +57,36 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  # Kubernetes deployment can be done manually using:
-  # kubectl apply -f Kubernetes/deployment.yaml
-  # kubectl port-forward service/multi-game-platform-service 3000:80
+  deploy-to-kubernetes:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure Kubernetes
+      uses: azure/k8s-set-context@v3
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Create namespace if not exists
+      run: |
+        kubectl create namespace ${{ env.KUBE_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+    - name: Deploy to Kubernetes
+      run: |
+        # Update deployment image in YAML
+        sed -i 's|himanshutoshniwal7570/multi-game-platform:latest|${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:${{ github.sha }}|g' Kubernetes/deployment.yaml
+        
+        # Apply the deployment
+        kubectl apply -f Kubernetes/deployment.yaml -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Wait for rollout to complete
+        kubectl rollout status deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
+
+    - name: Verify deployment
+      run: |
+        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
+        kubectl get svc -n ${{ env.KUBE_NAMESPACE }}
