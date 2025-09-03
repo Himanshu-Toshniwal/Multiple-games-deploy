@@ -66,27 +66,35 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Configure Kubernetes
-      uses: azure/k8s-set-context@v3
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
       with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        version: 'v1.28.0'
 
-    - name: Create namespace if not exists
+    - name: Configure Kubernetes
+      run: |
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+        kubectl config view --minify
+
+    - name: Create namespace
       run: |
         kubectl create namespace ${{ env.KUBE_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+      continue-on-error: true
 
     - name: Deploy to Kubernetes
       run: |
-        # Update deployment image in YAML
+        # Update image in deployment
         sed -i 's|himanshutoshniwal7570/multi-game-platform:latest|${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:${{ github.sha }}|g' Kubernetes/deployment.yaml
         
-        # Apply the deployment
+        # Apply deployment
         kubectl apply -f Kubernetes/deployment.yaml -n ${{ env.KUBE_NAMESPACE }}
         
-        # Wait for rollout to complete
+        # Wait for rollout
         kubectl rollout status deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }} --timeout=300s
 
-    - name: Verify deployment
+    - name: Get deployment info
       run: |
         kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
         kubectl get svc -n ${{ env.KUBE_NAMESPACE }}
+        echo "Access the app at: http://localhost:30000"
