@@ -1,0 +1,94 @@
+name: Deploy Multi-Game Platform to Kubernetes
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: multi-game-platform
+  KUBE_NAMESPACE: games
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Test HTML validity
+      run: |
+        npm install -g html-validator-cli
+        html-validator --file index.html --verbose
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-to-kubernetes:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure Kubernetes
+      uses: azure/k8s-set-context@v3
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Deploy to Kubernetes
+      run: |
+        # Update the deployment with the new image
+        kubectl set image deployment/multi-game-platform \
+          game-platform=${{ secrets.DOCKERHUB_USERNAME }}/multi-game-platform:${{ github.sha }} \
+          -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Apply the deployment if it doesn't exist
+        kubectl apply -f kubernetes/deployment.yaml -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Wait for rollout to complete
+        kubectl rollout status deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }}
+        
+        # Restart the deployment to ensure new config is applied
+        kubectl rollout restart deployment/multi-game-platform -n ${{ env.KUBE_NAMESPACE }}
+
+    - name: Verify deployment
+      run: |
+        kubectl get pods -n ${{ env.KUBE_NAMESPACE }}
+        kubectl get svc -n ${{ env.KUBE_NAMESPACE }}
