@@ -1,0 +1,16 @@
+{
+  "name": "multi-game-platform",
+  "version": "1.0.0",
+  "description": "A modern, interactive web-based gaming platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": ["games", "html5", "javascript", "web"],
+  "author": "Himanshu Toshniwal",
+  "license": "MIT",
+  "devDependencies": {
+    "html-validator-cli": "^7.1.0"
+  }
+}
