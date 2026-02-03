@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: multi-game-platform
+  namespace: games
   labels:
     app: multi-game-platform
 spec:
@@ -44,31 +45,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: multi-game-platform-service
+  namespace: games
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: multi-game-platform
   ports:
-  - protocol: TCP
-    port: 80
+  - port: 80
     targetPort: 80
-    nodePort: 30001
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: multi-game-platform-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: games.yourdomain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: multi-game-platform-service
-            port:
-              number: 80
