@@ -12,25 +12,10 @@ env:
 
 jobs:
   # ----------------------------
-  # 1️⃣ Build & Test
-  # ----------------------------
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # HTML validation optional, skip if rate limit
-      # - name: Validate HTML
-      #   run: |
-      #     docker run -v $PWD:/data ghcr.io/validator/validator:latest /data/index.html
-
-  # ----------------------------
-  # 2️⃣ Build & Push Docker Image
+  # 1️⃣ Build & Push Docker Image
   # ----------------------------
   build-and-push:
     runs-on: ubuntu-latest
-    needs: build-and-test
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -56,7 +41,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   # ----------------------------
-  # 3️⃣ Deploy to Kubernetes
+  # 2️⃣ Deploy to Kubernetes
   # ----------------------------
   deploy-to-k8s:
     runs-on: ubuntu-latest
@@ -65,21 +50,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Setup AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      # Setup kubectl
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: 'v1.28.0'
 
-      - name: Configure kubeconfig from secret
+      # Decode kubeconfig
+      - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
+      # Create namespace if not exists
       - name: Ensure namespace exists
         run: |
           kubectl get namespace ${{ env.KUBE_NAMESPACE }} || kubectl create namespace ${{ env.KUBE_NAMESPACE }}
 
+      # Apply deployment
       - name: Deploy Multi-Game Platform
         run: |
           kubectl apply -f Kubernetes/deployment.yaml -n ${{ env.KUBE_NAMESPACE }}
