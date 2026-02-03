@@ -1,5 +1,5 @@
 # Create an ECS Cluster
-resource "aws_ecs_cluster" "multiple_game_cluster" {
+resource "aws_ecs_cluster" "multiple-game-cluster" {
   name = "multiple-game-cluster"
   tags = {
     Name = "multiple-game-cluster"
@@ -57,18 +57,19 @@ resource "aws_ecs_task_definition" "multiple_game_task" {
 }
 
 # Create an ECS Service
-resource "aws_ecs_service" "tetris_service" {
+resource "aws_ecs_service" "multiple-game-service" {
   name            = "multiple-game-service"
-  cluster         = aws_ecs_cluster.tetris_cluster.id
-  task_definition = aws_ecs_task_definition.tetris_task.arn
+  cluster         = aws_ecs_cluster.multiple-game-cluster.id
+  task_definition = aws_ecs_task_definition.multiple_game_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = data.aws_subnets.default.ids
-    security_groups  = [aws_security_group.tetris_ecs_sg.id]
+    security_groups  = [aws_security_group.multiple_game_sg.id]
     assign_public_ip = true
   }
   tags = {
     Name = "multiple-game-service"
   }
 }
+
